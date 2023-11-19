@@ -9,3 +9,23 @@
 .label {
   @apply absolute top-[-7px] left-4 text-gray-400 font-ubuntu bg-white px-1 peer-focus:text-primary uppercase text-xs;
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1b202d;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(238, 238, 238) 989;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

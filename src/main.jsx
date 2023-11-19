@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import "./index.css";
 
 import PageLoading from "./pages/PageLoading.jsx";
+import Main from "./pages/Main.jsx";
 const Register = lazy(() => import("./pages/Register"));
 const Login = lazy(() => import("./pages/Login"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <h1>Home a sat</h1>,
+    element: <Main />,
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
