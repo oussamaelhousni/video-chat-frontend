@@ -2,28 +2,26 @@ import React from "react";
 
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import App from "./App.jsx";
+import { lazy, Suspense } from "react";
+import { store } from "./app/store.js";
+import { Provider } from "react-redux";
 import "./index.css";
 
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import ForgotPassword from "./pages/ForgotPassword";
-import SetPassword from "./pages/SetPassword";
-import ConfirmAccount from "./pages/ConfirmAccount";
+import PageLoading from "./pages/PageLoading.jsx";
+const Register = lazy(() => import("./pages/Register"));
+const Login = lazy(() => import("./pages/Login"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const SetPassword = lazy(() => import("./pages/SetPassword"));
+const ConfirmAccount = lazy(() => import("./pages/ConfirmAccount"));
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000,
-    },
-  },
-});
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <Suspense fallback={<PageLoading />}>
+        <Login />
+      </Suspense>
+    ),
   },
   {
     path: "/confirm/:userId/:emailCodeConfirmation",
@@ -31,7 +29,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <Suspense fallback={<PageLoading />}>
+        <Register />
+      </Suspense>
+    ),
   },
   {
     path: "/forgot-password",
@@ -42,12 +44,15 @@ const router = createBrowserRouter([
     path: "/set-password",
     element: <SetPassword />,
   },
+  {
+    path: "/",
+    element: <h1>Home a sat</h1>,
+  },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+    <Provider store={store}>
       <RouterProvider router={router} />
-    </QueryClientProvider>
+    </Provider>
   </React.StrictMode>
 );

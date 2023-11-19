@@ -1,14 +1,23 @@
 import React, { useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useState } from "react";
 import { VscArrowRight, VscArrowLeft } from "react-icons/vsc";
 import { TextInput, Button } from "../components";
 import image from "../assets/AI_Generated_Image.jpeg";
-
+import { useNavigate } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  register,
+  resendConfirmationMail,
+  initState,
+} from "../app/slices/authSlice";
 const Register = () => {
-  const [isShowed, setIsShowed] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isSuccess, error, isError, isLoading, successMessage } = useSelector(
+    (state) => state.auth
+  );
+  const [email, setEmail] = useState("");
   const [registerData, setRegisterData] = useState({
     fullName: "",
     email: "",
@@ -16,34 +25,22 @@ const Register = () => {
     passwordConfirm: "",
   });
 
-  const register = (registerData) =>
-    axios.post(
-      import.meta.env.VITE_URL + "/api/v1/auth/register",
-      registerData
-    );
-  const { mutate, isError, error, isSuccess, isPending } = useMutation({
-    mutationFn: register,
-  });
-
   const onChange = (e) => {
     setRegisterData({ ...registerData, [e.target.name]: e.target.value });
   };
 
-  const show = () => {
-    setIsShowed(true);
-    setTimeout(() => {
-      setIsShowed(false);
-    }, 5000);
+  const onEmailChange = (e) => {
+    onChange(e);
+    setEmail(e.target.value);
   };
+
   useEffect(() => {
-    console.log(registerData);
-  }, [registerData]);
+    dispatch(initState());
+  }, []);
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    mutate(registerData, {
-      onError: show,
-      onSuccess: show,
-    });
+    dispatch(register(registerData));
   };
   return (
     <div className="flex items-center  w-screen h-screen relative">
@@ -64,16 +61,15 @@ const Register = () => {
         >
           <h1 className="text-4xl font-ubuntu uppercase">Register</h1>
 
-          {isError && isShowed && (
+          {isError && (
             <div className="bg-red-600 px-8 py-4 w-full text-md text-white">
-              {error.response.data.message}
+              {error}
             </div>
           )}
 
-          {isSuccess && isShowed && (
+          {isSuccess && (
             <div className="bg-green-600 px-8 py-4 w-full text-md text-white ring-2 text-center">
-              User created successfully, please check your email for account
-              confirmation
+              {successMessage}
             </div>
           )}
           <TextInput
@@ -89,7 +85,7 @@ const Register = () => {
             placeholder="Enter your email"
             label="email"
             value={registerData.email}
-            onChange={onChange}
+            onChange={onEmailChange}
             className="w-full"
           />
           <TextInput
@@ -111,12 +107,27 @@ const Register = () => {
             className="w-full"
           />
 
-          <div className="w-full">
-            <Button className={"w-full"} type={"submit"}>
+          <div className="w-full flex text-center justify-center flex-col">
+            {isSuccess && (
+              <>
+                <a
+                  className="text-blue-700 hover:text-blue-500 px-4 py-2 rounded-md  w-full  mt-[-1rem] font-semibold cursor-pointer"
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(resendConfirmationMail(email));
+                  }}
+                >
+                  I didn't receive any email 😱
+                </a>
+              </>
+            )}
+
+            <Button className={"w-full"} type={"submit"} disabled={isSuccess}>
               <span className="flex items-center gap-2 justify-center">
-                Sign in{" "}
-                {!isPending && <VscArrowRight className="inline-flex" />}{" "}
-                {isPending && (
+                Sign up{" "}
+                {!isLoading && <VscArrowRight className="inline-flex" />}{" "}
+                {isLoading && (
                   <RotatingLines
                     className="text-white inline-flex"
                     strokeColor="white"
@@ -129,7 +140,10 @@ const Register = () => {
               </span>
             </Button>
           </div>
-          <Button className="w-full !bg-secondary !hover:bg-red uppercase font-ubuntu">
+          <Button
+            className="w-full !bg-secondary !hover:bg-red uppercase font-ubuntu"
+            onClick={() => navigate("/login")}
+          >
             Login
           </Button>
         </form>
