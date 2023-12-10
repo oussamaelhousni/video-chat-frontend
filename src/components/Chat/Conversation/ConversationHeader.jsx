@@ -7,7 +7,7 @@ import { HiDotsVertical } from "react-icons/hi";
 
 const ConversationHeader = () => {
   return (
-    <div className="p-4 bg-[#1B202D] flex justify-between items-center">
+    <div className="p-4 bg-[#1B202D] flex justify-between items-center h-[4.5rem]">
       <img
         src="https://fastly.picsum.photos/id/68/200/200.jpg?hmac=CPg7ZGK1PBwt6DmjjPRApX_t-mOiYxt0pel50VH4Gwk"
         className="aspect-square object-cover w-[2.5rem] rounded-full cursor-pointer"

@@ -14,13 +14,15 @@ const Message = ({ message, messageBefore }) => {
           message.createdAt
         ).getMinutes()}`}
       </span>
-      <div
-        className={`h-[20px] w-[30px] skew-x-[${
-          message.sender === "him" ? "-" : ""
-        }45deg] bg-[#2d3436] rounded-sm absolute top-0 ${
-          message.sender == "him" ? "right" : "left"
-        }-[-1px]`}
-      ></div>
+      {!messageBefore && (
+        <div
+          className={`h-[20px] w-[30px] skew-x-[${
+            message.sender === "him" ? "-" : ""
+          }45deg] bg-[#2d3436] rounded-sm absolute top-0 ${
+            message.sender == "him" ? "right" : "left"
+          }-[-1px]`}
+        ></div>
+      )}
     </div>
   );
 };
