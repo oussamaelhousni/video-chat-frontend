@@ -25,7 +25,7 @@ const ProfileBody = () => {
     setPassword({ ...password, [e.target.name]: e.target.value });
   };
   return (
-    <div className="flex flex-col items-center py-10 gap-12 px-8">
+    <div className="flex flex-col items-center py-10 gap-8 px-8">
       <ChangeProfilePicture className="mb-16" />
       <ProfileInput
         value={fullName}
@@ -34,9 +34,6 @@ const ProfileBody = () => {
       />
 
       <ProfileInput value={about} onChange={changeAbout} label="About" />
-      <div className="border-b-[1px] border-gray-700 w-full"></div>
-      <ProfileInputPassword value={pass} onChange={onChangePass} />
-      <ProfileInputPassword value={pass} onChange={onChangePass} />
       <ProfileInputPassword value={pass} onChange={onChangePass} />
     </div>
   );

@@ -1,22 +1,28 @@
 import React from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 // 3rd party
 
 // components
 import ConversationsList from "./Conversation/ConversationsList";
+import StoriesList from "./Story/StoriesList";
 import Profile from "./Profile/Profile";
+import ArchiveList from "./Archive/ArchiveList";
+
 const Lists = new Map([
-  ["conversation", <ConversationsList />],
   ["settings", <Profile />],
-  ["stories", null],
+  ["stories", <StoriesList />],
   ["newConversation", null],
+  ["archive", <ArchiveList />],
+  ["null", null],
 ]);
 
 const ChatLeftSide = () => {
-  const [activeList, setActiveList] = useState("settings");
+  const { currentPage } = useSelector((state) => state.leftPage);
   return (
-    <div className="bg-[#1B202D] h-full w-[25rem] flex flex-col overflow-auto">
-      {Lists.get(activeList)}
+    <div className="bg-[#1B202D] h-full w-[25rem] flex flex-col overflow-auto relative">
+      <ConversationsList />
+      {Lists.get(currentPage)}
     </div>
   );
 };
