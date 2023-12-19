@@ -1,9 +1,14 @@
 import React from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 // redux actions
 import { setPage } from "../../../app/slices/leftSideSlice";
 // 3rd party
 import { FaHistory } from "react-icons/fa";
+
+import { GoMultiSelect } from "react-icons/go";
+import { IoSettingsSharp } from "react-icons/io5";
+import { MdLogout } from "react-icons/md";
 
 import { IoIosChatboxes } from "react-icons/io";
 import { HiDotsVertical } from "react-icons/hi";
@@ -11,10 +16,17 @@ import { GiTorpedo } from "react-icons/gi";
 
 const ConversationHeader = () => {
   const dispatch = useDispatch();
+  const [popUp, setPopUp] = useState(true);
+
+  const togglePopup = () => {
+    setPopUp((state) => !state);
+  };
 
   const toPage = (page) => {
-    console.log("to page");
-    return () => dispatch(setPage(page));
+    return () => {
+      setPopUp(false);
+      dispatch(setPage(page));
+    };
   };
 
   return (
@@ -38,8 +50,27 @@ const ConversationHeader = () => {
           <IoIosChatboxes />
         </span>
 
-        <span className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100">
-          <HiDotsVertical />
+        <span className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100 relative">
+          <HiDotsVertical onClick={togglePopup} />
+          {popUp && (
+            <ul className="absolute min-w-[200px] bg-[#222f3e] rounded-sm top-[30px] left-0 -translate-x-[100%] z-10 shadow shadow-gray-700">
+              <li className="text-white text-sm font-ubuntu uppercase text-left px-4 py-3  hover:bg-[#576574] min-w-full flex items-center">
+                <GoMultiSelect className="inline-flex me-2 text-[20px]" />
+                select chats
+              </li>
+              <li
+                className="text-white text-sm font-ubuntu uppercase text-left px-4 py-3  hover:bg-[#576574]"
+                onClick={toPage("settings")}
+              >
+                <IoSettingsSharp className="inline-flex me-2 text-[20px]" />
+                Settings
+              </li>
+              <li className="text-white text-sm font-ubuntu uppercase text-left px-4 py-3  hover:bg-[#576574]">
+                <MdLogout className="inline-flex me-2 text-[20px]" />
+                Logout
+              </li>
+            </ul>
+          )}
         </span>
       </div>
     </div>
