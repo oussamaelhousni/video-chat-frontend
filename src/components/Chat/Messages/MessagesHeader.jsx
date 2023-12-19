@@ -5,10 +5,15 @@ import { IoVideocam } from "react-icons/io5";
 import { HiDotsVertical } from "react-icons/hi";
 import { IoMdCall } from "react-icons/io";
 
+import toPage from "../../../utils/toPage";
+
 const MessagesHeader = () => {
   return (
     <div className="p-4 bg-[#1B202D] flex justify-between items-center">
-      <div className="flex gap-2 items-center" onClick={""}>
+      <div
+        className="flex gap-2 items-center"
+        onClick={toPage("senderInfo", false)}
+      >
         <img
           src="https://fastly.picsum.photos/id/203/200/200.jpg?hmac=fydyJjsULq7iMwTTIg_m6g_PQQ1paJrufNsEiqbJRsg"
           className="aspect-square object-cover w-[2.5rem] rounded-full cursor-pointer"
