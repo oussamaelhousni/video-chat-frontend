@@ -10,23 +10,14 @@ import {
 import { IoMdCheckmark } from "react-icons/io";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
-const conversation = {
-  _id: "1",
-  fullName: "Tasnime Elhousni",
-  profilePicture:
-    "https://fastly.picsum.photos/id/652/200/200.jpg?hmac=m_Z74HS-9l6n785rv5t2r3riTmdwuq-Z0rMJz9iHg5g",
-  message: { text: "this a message" },
-  type: "voiceCall",
-  isAnswered: false,
-  sender: "you",
-  isSeen: true,
-  isDelivered: true,
-  createdAt: Date.now(),
-};
+import toPage from "../../../utils/toPage";
 
 const Conversation = ({ conversation }) => {
   return (
-    <div className="py-3 px-4 flex items-center h-[4.5rem] gap-4 hover:bg-[#3D4354]">
+    <div
+      className="py-3 px-4 flex items-center h-[4.5rem] gap-4 hover:bg-[#3D4354]"
+      onClick={toPage("messageList", false)}
+    >
       <img
         src={conversation.profilePicture}
         alt="profile image"

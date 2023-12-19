@@ -16,7 +16,7 @@ import { GiTorpedo } from "react-icons/gi";
 
 const ConversationHeader = () => {
   const dispatch = useDispatch();
-  const [popUp, setPopUp] = useState(true);
+  const [popUp, setPopUp] = useState(false);
 
   const togglePopup = () => {
     setPopUp((state) => !state);

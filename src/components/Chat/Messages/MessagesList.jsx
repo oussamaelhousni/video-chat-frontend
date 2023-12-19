@@ -21,7 +21,7 @@ const data = [
 const MessagesList = () => {
   const [messages, setMessages] = useState(data);
   return (
-    <>
+    <div className="absolute left-0 top-0 w-full min-h-full">
       <MessagesHeader />
       <div className="flex flex-grow flex-col p-8 bg-[#151924] gap-2">
         {messages.map((message, index) => {
@@ -35,7 +35,7 @@ const MessagesList = () => {
         })}
       </div>
       <MessagesFooter />
-    </>
+    </div>
   );
 };
 
