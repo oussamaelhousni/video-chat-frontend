@@ -1,10 +1,14 @@
 import React from "react";
+import toPage from "../../../utils/toPage";
 
 const Story = ({ nbrOfStories, image, fullName }) => {
   const dashLength = (2 * Math.PI * 23) / (nbrOfStories * 2); // Total circumference / number of dashes
   const dashArray = `${dashLength} ${dashLength}`;
   return (
-    <div className="flex items-center py-4 px-4 gap-4">
+    <div
+      className="flex items-center py-4 px-4 gap-4"
+      onClick={toPage("story", false)}
+    >
       <div className="relative h-[60px] w-[60px] cursor-pointer">
         <svg
           width={60}
