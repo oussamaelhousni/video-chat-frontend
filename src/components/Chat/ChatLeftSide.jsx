@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useSelector } from "react-redux";
 // 3rd party
 
@@ -27,4 +27,4 @@ const ChatLeftSide = () => {
   );
 };
 
-export default ChatLeftSide;
+export default memo(ChatLeftSide);

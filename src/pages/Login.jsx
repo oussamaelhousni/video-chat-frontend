@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -29,12 +29,12 @@ const Login = () => {
 
   useEffect(() => {
     dispatch(initState());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (token) navigate("/");
     setTokenChecked(true);
-  }, [token]);
+  }, [token, navigate]);
 
   if (!tokenChecked) return <PageLoading />;
 
