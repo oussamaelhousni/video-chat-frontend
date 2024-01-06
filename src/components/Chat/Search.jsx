@@ -1,5 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { closePopup } from "../../app/slices/popupSlice";
 import classNames from "classnames";
 import { IoMdPersonAdd } from "react-icons/io";
 import { BiBlock } from "react-icons/bi";
@@ -7,72 +9,13 @@ import { IoPersonRemove } from "react-icons/io5";
 import { CgUnblock } from "react-icons/cg";
 import { MagnifyingGlass } from "react-loader-spinner";
 import { LuUserCheck2 } from "react-icons/lu";
+import { IoMdClose } from "react-icons/io";
 
-const fakeData = [
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: true,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-  {
-    fullName: "Oussama Elhousni",
-    isFriend: true,
-    isBlocked: false,
-    profilePicture: "",
-    isPending: true,
-  },
-];
+import {
+  searchAction,
+  updateRequest,
+} from "../../app/slices/friendRequestsSlice";
+
 const SearchRecord = ({ data }) => {
   return (
     <li className="flex items-center justify-between p-6 bg-[#2d3436] border-b border-[black]">
@@ -120,19 +63,29 @@ const SearchRecord = ({ data }) => {
     </li>
   );
 };
+
 const Search = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, isError, isSuccess, requests } = useSelector(
+    (state) => state.friendRequests
+  );
+  const dispatch = useDispatch();
   const [results, setResults] = useState([]);
-  const [search, setSearch] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   function debounce(func, timeout = 750) {
     let timer;
     return (...args) => {
       clearTimeout(timer);
-      setIsLoading(true);
+      dispatch(updateRequest({ isLoading: true }));
       if (!args[0].target.value) {
-        setResults([]);
-        setIsLoading(false);
+        /* setResults([]);
+        setIsLoading(false); */ dispatch(
+          updateRequest({ isLoading: false, requests: [] })
+        );
         return;
       }
       timer = setTimeout(() => {
@@ -143,19 +96,28 @@ const Search = () => {
 
   const handleSearch = useCallback(
     debounce((e) => {
-      axios
-        .get(`http://localhost:8080/api/v1/users?search=${e.target.value}`)
-        .then((response) => {
-          setResults(response.data.data.users);
-          setIsLoading(false);
-        })
-        .catch(() => setIsLoading(false));
+      dispatch(searchAction(e.target.value));
     }, 1000),
     []
   );
 
   return (
     <div className="h-screen w-screen bg-black bg-opacity-50 fixed left-0 top-0 z-10 flex flex-col items-center">
+      <IoMdClose
+        className="text-4xl absolute top-[2rem] right-[2rem] text-white cursor-pointer"
+        onClick={() => {
+          dispatch(closePopup("search"));
+          dispatch(
+            updateRequest({
+              requests: [],
+              isLoading: false,
+              isError: false,
+              error: "",
+            })
+          );
+        }}
+      />
+
       <div className="w-8/12 md:w-1/2 flex flex-col">
         <div className="mt-8 bg-[white] p-4 bg-opacity-100 font-ubuntu mb-4">
           <input
@@ -163,6 +125,7 @@ const Search = () => {
             placeholder="search a friend by name or email"
             className="bg-transparent w-full h-full block focus:outline-none"
             onChange={handleSearch}
+            ref={inputRef}
           />
         </div>
 
@@ -180,11 +143,15 @@ const Search = () => {
               width={100}
             />
           )}
-          {results.length === 0 ? (
-            <h3>No result found</h3>
+          {requests.length === 0 ? (
+            <>
+              {!isLoading && (
+                <h3 className="text-white text-2xl p-4">No results found</h3>
+              )}
+            </>
           ) : (
             !isLoading &&
-            results.map((record) => {
+            requests.map((record) => {
               return <SearchRecord data={record} key={record._id} />;
             })
           )}

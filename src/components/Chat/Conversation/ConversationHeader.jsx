@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 // redux actions
 import { setPage } from "../../../app/slices/leftSideSlice";
+import { openPopup } from "../../../app/slices/popupSlice";
 // 3rd party
 import { FaHistory } from "react-icons/fa";
 
@@ -12,7 +13,7 @@ import { MdLogout } from "react-icons/md";
 
 import { IoIosChatboxes } from "react-icons/io";
 import { HiDotsVertical } from "react-icons/hi";
-import { GiTorpedo } from "react-icons/gi";
+import { FaUserFriends } from "react-icons/fa";
 
 const ConversationHeader = () => {
   const dispatch = useDispatch();
@@ -44,6 +45,13 @@ const ConversationHeader = () => {
           onClick={toPage("stories")}
         >
           <FaHistory />
+        </span>
+
+        <span
+          className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100"
+          onClick={() => dispatch(openPopup("search"))}
+        >
+          <FaUserFriends />
         </span>
 
         <span className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100">
