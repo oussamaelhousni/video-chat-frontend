@@ -1,9 +1,10 @@
 import React from "react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 // redux actions
 import { setPage } from "../../../app/slices/leftSideSlice";
 import { openPopup } from "../../../app/slices/popupSlice";
+import { getFriendRequests } from "../../../app/slices/addFriendsSlice";
 // 3rd party
 import { FaHistory } from "react-icons/fa";
 
@@ -13,9 +14,11 @@ import { MdLogout } from "react-icons/md";
 
 import { IoIosChatboxes } from "react-icons/io";
 import { HiDotsVertical } from "react-icons/hi";
-import { FaUserFriends } from "react-icons/fa";
+import { IoMdNotifications } from "react-icons/io";
+import { MdPersonSearch } from "react-icons/md";
 
 const ConversationHeader = () => {
+  const { requests, count } = useSelector((state) => state.addFriends);
   const dispatch = useDispatch();
   const [popUp, setPopUp] = useState(false);
 
@@ -30,6 +33,10 @@ const ConversationHeader = () => {
     };
   };
 
+  useEffect(() => {
+    dispatch(getFriendRequests());
+  }, []);
+
   return (
     <div className="p-4 bg-[#1B202D] flex justify-between items-center h-[4.5rem]">
       <img
@@ -42,6 +49,19 @@ const ConversationHeader = () => {
       <div className="flex items-center gap-6">
         <span
           className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100"
+          onClick={toPage("notifications")}
+        >
+          <div className="relative">
+            {count > 0 && (
+              <div className="aspect-square w-[15px] h-[15px] flex justify-center items-center rounded-full bg-red-500 top-[-8px] right-[-8px] text-[8px] absolute">
+                {count}
+              </div>
+            )}
+            <IoMdNotifications />
+          </div>
+        </span>
+        <span
+          className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100"
           onClick={toPage("stories")}
         >
           <FaHistory />
@@ -51,7 +71,7 @@ const ConversationHeader = () => {
           className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100"
           onClick={() => dispatch(openPopup("search"))}
         >
-          <FaUserFriends />
+          <MdPersonSearch />
         </span>
 
         <span className="cursor-pointer text-white text-xl hover:text-gray-300 transition-colors duration-100">

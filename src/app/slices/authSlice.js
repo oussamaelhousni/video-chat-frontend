@@ -7,17 +7,16 @@ const clearState = (state) => {
   state.isError = false;
   state.isSuccess = false;
   state.successMessage = "";
-  state.fullName = "";
   state.email = "";
   state.error = "";
   state.token = "";
-  state.profileImage = "";
   state.status = "idle";
+  state.user = null;
 };
 
 const initialState = {
   token: localStorage.getItem("token") || "",
-  user: JSON.parse(localStorage.getItem("user")),
+  user: JSON.parse(localStorage.getItem("user")) || null,
   isLoading: false,
   isError: false,
   isSuccess: false,

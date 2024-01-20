@@ -4,7 +4,8 @@ import Search from "./Search";
 const ChatContainer = ({ children }) => {
   const { socket } = useSelector((state) => state.socket);
   const { search } = useSelector((state) => state.popup);
-  socket?.emit("init", { userId: 12 });
+  const { _id } = useSelector((state) => state.auth.user);
+  socket?.emit("init", { userId: _id });
 
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-secondary">

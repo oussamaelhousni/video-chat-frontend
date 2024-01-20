@@ -13,10 +13,15 @@ import { IoMdClose } from "react-icons/io";
 
 import {
   searchAction,
+  sendFriendRequest,
   updateRequest,
+  cancelFriendRequest,
+  block,
+  unblock,
 } from "../../app/slices/friendRequestsSlice";
 
 const SearchRecord = ({ data }) => {
+  const dispatch = useDispatch();
   return (
     <li className="flex items-center justify-between p-6 bg-[#2d3436] border-b border-[black]">
       <div className="flex items-center">
@@ -40,22 +45,37 @@ const SearchRecord = ({ data }) => {
               Unfriend <IoPersonRemove className="inline-block ms-2 text-lg" />
             </button>
           ) : (
-            <button className="bg-[#0984e3] py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm flex justify-center items-center border-none outline-none hover:opacity-90">
-              Add user <IoMdPersonAdd className="inline-block ms-2 text-lg" />
+            <button
+              className="bg-[#0984e3] py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm flex justify-center items-center border-none outline-none hover:opacity-90"
+              onClick={() => dispatch(sendFriendRequest(data._id))}
+            >
+              <span>Add User</span>
+              <IoMdPersonAdd className="inline-block ms-2 text-lg" />
             </button>
           )
         ) : (
-          <button className="bg-[#10ac84] py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm flex justify-center items-center border-none outline-none hover:opacity-90">
-            Accept <LuUserCheck2 className="inline-block ms-2 text-lg" />
+          <button
+            className="bg-[#d35400] py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm flex justify-center items-center border-none outline-none hover:opacity-90"
+            onClick={() => dispatch(cancelFriendRequest(data._id))}
+          >
+            <span>Unsent</span>{" "}
+            <LuUserCheck2 className="inline-block ms-2 text-lg" />
           </button>
         )}
         {!data.isBlocked ? (
-          <button className="bg-red-500 py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm">
-            block <BiBlock className="inline-block ms-2 text-lg mt-[-3px]" />
+          <button
+            className="bg-red-500 py-2 px-2 font-ubuntu capitalize text-white text-sm rounded-sm text-center"
+            onClick={() => dispatch(block(data._id))}
+          >
+            <span>block</span>{" "}
+            <BiBlock className="inline-block ms-2 text-lg mt-[-3px] " />
           </button>
         ) : (
-          <button className="bg-red-500 py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm">
-            Unblock{" "}
+          <button
+            className="bg-[#2980b9] py-2 px-4 font-ubuntu capitalize text-white text-sm rounded-sm"
+            onClick={() => dispatch(unblock(data._id))}
+          >
+            <span>Unblock</span>{" "}
             <CgUnblock className="inline-block ms-2 text-lg mt-[-3px]" />
           </button>
         )}

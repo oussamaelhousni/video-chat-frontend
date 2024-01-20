@@ -8,6 +8,7 @@ import ChatContainer from "../components/Chat/ChatContainer";
 import ChatLeftSide from "../components/Chat/ChatLeftSide";
 import ChatRightSide from "../components/Chat/ChatRightSide";
 
+import { addNewFriend, removeFriend } from "../app/slices/addFriendsSlice";
 // eslint-disable-next-line react-refresh/only-export-components
 const ChatUi = () => {
   const dispatch = useDispatch();
@@ -16,11 +17,21 @@ const ChatUi = () => {
     socket.on("connect", () => {
       console.log("connected");
       dispatch(setSocket(socket));
+
+      // 1 - add notification when a user send a requests
+      socket.on("notification", (notification) => {
+        dispatch(addNewFriend(notification));
+      });
+      // 2 - remove notification when user cancel his request
+      socket.on("removeNotification", (userId) => {
+        console.log("remove", userId);
+        dispatch(removeFriend(userId));
+      });
     });
 
     return () => {
-      dispatch(setSocket(null));
       socket.close();
+      dispatch(setSocket(null));
     };
   }, [dispatch]);
 

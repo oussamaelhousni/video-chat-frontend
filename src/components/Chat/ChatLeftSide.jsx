@@ -8,12 +8,13 @@ import ConversationsList from "./Conversation/ConversationsList";
 import StoriesList from "./Story/StoriesList";
 import Profile from "./Profile/Profile";
 import ArchiveList from "./Archive/ArchiveList";
-
+import NotificationsList from "./notifications/NotificationsList";
 const Lists = new Map([
   ["settings", <Profile />],
   ["stories", <StoriesList />],
   ["newConversation", null],
   ["archive", <ArchiveList />],
+  ["notifications", <NotificationsList />],
   ["null", null],
 ]);
 
