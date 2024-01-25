@@ -1,13 +1,15 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // 3rd party
-import { v4 as uuidv4 } from "uuid";
+import { useSelector, useDispatch } from "react-redux";
+import { v4 as uuid4 } from "uuid";
 // components
 import ConversationHeader from "./ConversationHeader";
 import ConversationSearch from "./ConversationSearch";
 import ConversationArchive from "./ConversationArchive";
 import Conversation from "./Conversation";
-
+// actions
+import { getConversations } from "../../../app/slices/conversationsSlice";
 // fake data
 const data = [
   {
@@ -101,10 +103,18 @@ const data = [
     isDelivered: false,
     createdAt: Date.now(),
   }, */,
-].map((conversation) => ({ ...conversation, _id: uuidv4() }));
+].map((conversation) => ({ ...conversation, _id: uuid4() }));
 
 const ConversationsList = () => {
-  const [conversations, setConversations] = useState(data);
+  const dispatch = useDispatch();
+  const { _id: userId } = useSelector((state) => state.auth.user);
+  const { conversations, isLoading, isError, error } = useSelector(
+    (state) => state.conversations
+  );
+
+  useEffect(() => {
+    dispatch(getConversations());
+  }, []);
   return (
     <>
       <ConversationHeader />
@@ -112,7 +122,11 @@ const ConversationsList = () => {
       <ConversationArchive />
       {conversations.map((conversation) => {
         return (
-          <Conversation conversation={conversation} key={conversation._id} />
+          <Conversation
+            conversation={conversation}
+            key={conversation._id}
+            userId={userId}
+          />
         );
       })}
     </>

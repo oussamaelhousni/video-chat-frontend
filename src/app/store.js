@@ -7,6 +7,7 @@ import socketReducer from "./slices/socketSlice";
 import popupReducer from "./slices/popupSlice";
 import friendRequestsReducer from "./slices/friendRequestsSlice";
 import addFriendsReducer from "./slices/addFriendsSlice";
+import conversationsReducer from "./slices/conversationsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     popup: popupReducer,
     friendRequests: friendRequestsReducer,
     addFriends: addFriendsReducer,
+    conversations: conversationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

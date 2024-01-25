@@ -7,88 +7,97 @@ import {
   MdVideocam,
   MdVideocamOff,
 } from "react-icons/md";
+import { useSelector } from "react-redux";
 import { IoMdCheckmark } from "react-icons/io";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 import toPage from "../../../utils/toPage";
 
-const Conversation = ({ conversation }) => {
+const Conversation = ({ conversation, userId }) => {
   return (
     <div
       className="py-3 px-4 flex items-center h-[4.5rem] gap-4 hover:bg-[#3D4354]"
       onClick={toPage("messageList", false)}
     >
       <img
-        src={conversation.profilePicture}
+        src={
+          conversation.profilePicture ||
+          "https://cdn.dribbble.com/users/27766/screenshots/3488007/media/30313b019754da503ec0860771a5536b.png?resize=400x0"
+        }
         alt="profile image"
         className="aspect-square h-[3.5rem] rounded-full"
       />
       <div className="flex-grow h-full">
         <div className="flex justify-between items-center text-white">
-          <h3 className=" font-semibold">{conversation.fullName}</h3>
+          <h3 className=" font-semibold">{conversation.user.fullName}</h3>
           <span className="text-sm">
-            {`${new Date(conversation.createdAt).getHours()}:${new Date(
-              conversation.createdAt
-            ).getMinutes()}`}
+            {`${new Date(
+              conversation.lastMessage?.updatedAt || conversation.createdAt
+            ).getHours()}:${new Date(conversation.createdAt).getMinutes()}`}
           </span>
         </div>
         <div className="text-[14px] text-gray-300">
-          {conversation.type === "voiceCall" && !conversation.isAnswered && (
-            <>
-              <MdPhoneMissed className="inline-flex mt-[-3px] me-1 text-red-500 items-center" />
-              Missed voice call
-            </>
-          )}
-
-          {conversation.type === "voiceCall" && conversation.isAnswered && (
-            <>
-              <MdPhoneCallback className="inline-flex mt-[-3px] me-1 text-green-500 items-center" />
-              Voice call
-            </>
-          )}
-          {conversation.type === "videoCall" && !conversation.isAnswered && (
-            <>
-              <MdVideocamOff className="inline-flex mt-[-3px] me-1 text-red-500 items-center" />
-              Missed video call
-            </>
-          )}
-
-          {conversation.type === "videoCall" && conversation.isAnswered && (
-            <>
-              <MdVideocam className="inline-flex mt-[-3px] me-1 text-green-500 items-center" />
-              video call
-            </>
-          )}
-
-          {conversation.type === "text" &&
-            !conversation.isDelivered &&
-            conversation.sender === "you" && (
+          {conversation.lastMessage?.type === "voiceCall" &&
+            !conversation.lastMessage?.isAnswered && (
               <>
-                <IoMdCheckmark className="inline-flex mt-[-3px] me-1 text-gray-500 items-center" />
-                {conversation.message.text[0].toUpperCase() +
-                  conversation.message.text.slice(1)}
+                <MdPhoneMissed className="inline-flex mt-[-3px] me-1 text-red-500 items-center" />
+                Missed voice call
               </>
             )}
 
-          {conversation.type === "text" &&
-            conversation.isDelivered &&
-            conversation.sender === "you" && (
+          {conversation.lastMessage?.type === "voiceCall" &&
+            conversation.lastMessage?.isAnswered && (
               <>
-                {conversation.isSeen ? (
+                <MdPhoneCallback className="inline-flex mt-[-3px] me-1 text-green-500 items-center" />
+                Voice call
+              </>
+            )}
+          {conversation.lastMessage?.type === "videoCall" &&
+            !conversation.lastMessage?.isAnswered && (
+              <>
+                <MdVideocamOff className="inline-flex mt-[-3px] me-1 text-red-500 items-center" />
+                Missed video call
+              </>
+            )}
+
+          {conversation.lastMessage?.type === "videoCall" &&
+            conversation.lastMessage?.isAnswered && (
+              <>
+                <MdVideocam className="inline-flex mt-[-3px] me-1 text-green-500 items-center" />
+                video call
+              </>
+            )}
+
+          {conversation.lastMessage?.type === "text" &&
+            !conversation.lastMessage?.isDelivered &&
+            conversation.lastMessage?.sender === userId && (
+              <>
+                <IoMdCheckmark className="inline-flex mt-[-3px] me-1 text-gray-500 items-center" />
+                {conversation.lastMessage?.text[0]?.toUpperCase() +
+                  conversation.lastMessage?.text?.slice(1)}
+              </>
+            )}
+
+          {conversation.lastMessage?.type === "text" &&
+            conversation.lastMessage?.isDelivered &&
+            conversation.lastMessage?.sender === userId && (
+              <>
+                {conversation.lastMessage?.isSeen ? (
                   <IoCheckmarkDoneOutline className="inline-flex mt-[-3px] me-1 text-gray-500 items-center" />
                 ) : (
                   <IoCheckmarkDoneOutline className="inline-flex mt-[-3px] me-1 text-blue-500 items-center" />
                 )}
-                {conversation.message.text[0].toUpperCase() +
-                  conversation.message.text.slice(1)}
+                {conversation.lastMessage?.text[0].toUpperCase() +
+                  conversation.lastMessage?.text.slice(1)}
               </>
             )}
-          {conversation.type === "text" && conversation.sender !== "you" && (
-            <>
-              {conversation.message.text[0].toUpperCase() +
-                conversation.message.text.slice(1)}
-            </>
-          )}
+          {conversation.lastMessage?.type === "text" &&
+            conversation.lastMessage?.sender !== userId && (
+              <>
+                {conversation.lastMessage?.text[0].toUpperCase() +
+                  conversation.lastMessage?.text.slice(1)}
+              </>
+            )}
         </div>
       </div>
     </div>
