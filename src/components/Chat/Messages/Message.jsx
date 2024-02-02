@@ -4,7 +4,7 @@ import React from "react";
 const Message = ({ message, messageBefore }) => {
   return (
     <div
-      className={`p-4 bg-[#2d3436] w-fit min-w-[10rem] min-h-[2rem] rounded-md flex flex-col relative ${
+      className={`pt-4 pb-6 ps-4 pe-8 bg-[#2d3436] w-fit min-w-[20rem] min-h-[2rem] rounded-md flex flex-col relative ${
         message.sender == "him" ? "self-end" : ""
       }`}
     >

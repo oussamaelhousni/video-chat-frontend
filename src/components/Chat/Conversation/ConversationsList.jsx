@@ -115,6 +115,7 @@ const ConversationsList = () => {
   useEffect(() => {
     dispatch(getConversations());
   }, []);
+
   return (
     <>
       <ConversationHeader />

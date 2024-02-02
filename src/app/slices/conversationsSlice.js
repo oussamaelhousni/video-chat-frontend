@@ -22,6 +22,30 @@ export const getConversations = createAsyncThunk(
   }
 );
 
+export const getMessagesOfConversation = createAsyncThunk(
+  "conversations/messages",
+  async (conversationId, thunkApi) => {
+    try {
+      const config = {
+        headers: {
+          authorization: `bearer ${thunkApi.getState().auth.token}`,
+        },
+      };
+      const response = await axios.get(
+        import.meta.env.VITE_URL +
+          "/api/v1/conversations/" +
+          conversationId +
+          "/messages",
+        config
+      );
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data.message || error.message;
+      return thunkApi.rejectWithValue(message);
+    }
+  }
+);
+
 const initialState = {
   conversations: [],
   currentConversation: null,

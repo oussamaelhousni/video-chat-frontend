@@ -7,17 +7,33 @@ import {
   MdVideocam,
   MdVideocamOff,
 } from "react-icons/md";
-import { useSelector } from "react-redux";
+
+import { useDispatch } from "react-redux";
+
 import { IoMdCheckmark } from "react-icons/io";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
 import toPage from "../../../utils/toPage";
+import { getCurrentConversationMessage } from "../../../app/slices/currentConversationSlice";
 
 const Conversation = ({ conversation, userId }) => {
+  const dispatch = useDispatch();
+  // remember toPage returns a function that will shows the passed in component
+  const toMessageList = toPage("messageList", false);
+
+  // fetch messages of current Active chat
+  const onClickHandler = () => {
+    dispatch(getCurrentConversationMessage(conversation._id));
+    dispatch(setCurrentConversation(conversation._id));
+    toMessageList();
+  };
   return (
     <div
       className="py-3 px-4 flex items-center h-[4.5rem] gap-4 hover:bg-[#3D4354]"
-      onClick={toPage("messageList", false)}
+      onClick={(e) => {
+        toMessageList();
+        onClickHandler(conversation._id);
+      }}
     >
       <img
         src={

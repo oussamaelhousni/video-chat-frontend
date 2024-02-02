@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 // 3rd party
 import { v4 as uuidv4 } from "uuid";
+import { useSelector } from "react-redux";
 // components
 import MessagesHeader from "./MessagesHeader";
 import MessagesFooter from "./MessagesFooter";
@@ -19,12 +20,12 @@ const data = [
 ].map((message) => ({ ...message, _id: uuidv4() }));
 
 const MessagesList = () => {
-  const [messages, setMessages] = useState(data);
+  const { messages } = useSelector((state) => state.currentConversation);
   return (
-    <div className="absolute left-0 top-0 w-full min-h-full">
+    <div className="absolute left-0 top-0 w-full h-full min-h-full">
       <MessagesHeader />
-      <div className="flex flex-grow flex-col p-8 bg-[#151924] gap-2">
-        {messages.map((message, index) => {
+      <div className="flex flex-grow flex-col p-8 bg-[#151924] gap-2 w-full h-full">
+        {messages?.map((message, index) => {
           return (
             <Message
               message={message}

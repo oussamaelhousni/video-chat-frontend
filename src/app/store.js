@@ -8,7 +8,7 @@ import popupReducer from "./slices/popupSlice";
 import friendRequestsReducer from "./slices/friendRequestsSlice";
 import addFriendsReducer from "./slices/addFriendsSlice";
 import conversationsReducer from "./slices/conversationsSlice";
-
+import currentConversationsReducer from "./slices/currentConversationSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -19,6 +19,7 @@ export const store = configureStore({
     friendRequests: friendRequestsReducer,
     addFriends: addFriendsReducer,
     conversations: conversationsReducer,
+    currentConversation: currentConversationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
