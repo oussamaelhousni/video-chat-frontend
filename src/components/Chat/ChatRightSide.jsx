@@ -11,7 +11,7 @@ const ChatRightSide = () => {
   const { currentPage } = useSelector((state) => state.rightPage);
   const { isLoading } = useSelector((state) => state.currentConversation);
   return (
-    <div className="flex-grow h-full lg:w-[80%] bg-green-500 border-l-[1px] border-gray-700 flex flex-col relative overflow-hidden">
+    <div className="flex-grow h-full lg:w-[80%] bg-green-500 border-l-[1px] border-gray-700 flex flex-col relative overflow-y-auto">
       <RightPageDefault />
       {currentPage == "story" && <StoryPage />}
       {currentPage === "messageList" && <MessagesList />}

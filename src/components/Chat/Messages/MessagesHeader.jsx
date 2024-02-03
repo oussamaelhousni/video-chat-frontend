@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 const MessagesHeader = () => {
   const { receiver } = useSelector((state) => state.currentConversation);
   return (
-    <div className="p-4 bg-[#1B202D] flex justify-between items-center">
+    <div className="p-4 bg-[#1B202D] flex justify-between items-center h-[5rem]">
       <div
         className="flex gap-2 items-center"
         onClick={toPage("senderInfo", false)}

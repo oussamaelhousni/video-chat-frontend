@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
 .input {
   @apply first-line:block px-4 py-2 border-[1.6px] border-gray-400 rounded-md font-ubuntu focus:outline-none focus:border-primary;
 }
