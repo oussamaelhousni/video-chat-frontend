@@ -1,8 +1,6 @@
-import React from "react";
-import { useRef } from "react";
-import atob from "atob";
-import "blob-polyfill";
 // 3rd party
+import React, { useRef, useEffect } from "react";
+import { AudioPlayer } from "react-audio-player-component";
 
 const Message = ({ message, messageBefore, userId }) => {
   /* const audio = useRef(null);
@@ -44,10 +42,28 @@ const Message = ({ message, messageBefore, userId }) => {
       )}
 
       {message.type === "audio" && (
-        <audio
-          controls
-          src={"http://localhost:8080/audios/" + message.url}
-        ></audio>
+        <>
+          <AudioPlayer
+            src={"http://localhost:8080/audios/" + message.url}
+            minimal={true}
+            width={350}
+            trackHeight={50}
+            barWidth={1}
+            gap={4}
+            visualise={true}
+            backgroundColor="#2d3436"
+            barColor="white"
+            barPlayedColor="#2d3436"
+            skipDuration={2}
+            showLoopOption={true}
+            showVolumeControl={true}
+
+            // seekBarColor="purple"
+            // volumeControlColor="blue"
+            // hideSeekBar={true}
+            // hideTrackKnobWhenPlaying={true}
+          />
+        </>
       )}
     </>
   );

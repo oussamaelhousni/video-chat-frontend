@@ -52,3 +52,34 @@ html {
     transform: rotate(360deg);
   }
 }
+
+wave-audio-path-player {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#demo1::part(player) {
+  background: rgb(0, 0, 0);
+  padding: 15px 0px;
+  border-radius: 20px;
+  border: 1px solid black;
+}
+
+#demo1::part(button) {
+  stroke: white;
+  fill: white;
+}
+
+#demo1::part(currenttime),
+#demo1::part(duration) {
+  color: white;
+  font-weight: bold;
+}
+
+#demo1::part(path1) {
+  stroke: white;
+}
+
+#demo1::part(path2) {
+  stroke: fuchsia;
+}
