@@ -11,6 +11,7 @@ import PageLoading from "./pages/PageLoading.jsx";
 import Main from "./pages/Main.jsx";
 import ChatContainer from "./components/Chat/ChatContainer.jsx";
 import ChatUi from "./pages/ChatUi.jsx";
+import Recorder from "./pages/Recorder.jsx";
 const Register = lazy(() => import("./pages/Register"));
 const Login = lazy(() => import("./pages/Login"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
     path: "/chat",
     element: <ChatUi />,
   },
+  { path: "/recorder", element: <Recorder /> },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
