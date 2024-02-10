@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { HiOutlinePlus } from "react-icons/hi2";
 import { FaRegFaceLaugh } from "react-icons/fa6";
 import { BiSolidSend } from "react-icons/bi";
@@ -7,19 +7,64 @@ import { FaStop } from "react-icons/fa";
 import { MdStop } from "react-icons/md";
 import { HiStop } from "react-icons/hi2";
 import { RiSendPlaneFill } from "react-icons/ri";
+import { FaImage } from "react-icons/fa";
+
+import { FaFile } from "react-icons/fa";
+import { FaFileImage } from "react-icons/fa6";
+import { RiFileVideoFill } from "react-icons/ri";
+
+// my Components
+import PreviewModal from "../../PreviewModal";
 
 import axios from "axios";
+import { v4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import { sendMessage } from "../../../app/slices/currentConversationSlice";
+import {
+  abortMessage,
+  pushNewMessage,
+  sendMessage,
+  switchWithRealMsg,
+} from "../../../app/slices/currentConversationSlice";
+import { addAbort } from "../../../app/slices/abortControllerSlice";
 
 const MessagesFooter = ({ scrollToBottom }) => {
   const dispatch = useDispatch();
   const { receiver, conversationId } = useSelector(
     (state) => state.currentConversation
   );
-
   const { token } = useSelector((state) => state.auth);
   const [textMessage, setTextMessage] = useState("");
+  const [recording, setRecording] = useState(false);
+  const [audioStartAt, setAudioStartAt] = useState(null);
+  const [currentTime, setCurrentTime] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+
+  // upload file menu
+  const [showFileMenu, setShowFileMenu] = useState(true);
+  const fileMenuRef = useRef(null);
+
+  // handle files
+  const imageRef = useRef(null);
+  const docRef = useRef(null);
+  const videoRef = useRef(null);
+  const imgSrc = useRef(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
+  const [doc, setDoc] = useState(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      // check if we clicked outside
+      if (fileMenuRef.current && !fileMenuRef.current.contains(event.target)) {
+        setShowFileMenu(false);
+      }
+    };
+    document.addEventListener("click", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
 
   const handleOnChange = (e) => {
     e.target.value;
@@ -42,12 +87,6 @@ const MessagesFooter = ({ scrollToBottom }) => {
     }, 300);
   };
 
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
-  const [audioStartAt, setAudioStartAt] = useState(null);
-  const [currentTime, setCurrentTime] = useState(null);
-
   function countTimeFromSpecificDate() {
     if (!currentTime || !audioStartAt) return "00:00";
     const timeDifference = Math.abs(currentTime - audioStartAt) / 1000; // in seconds
@@ -59,6 +98,7 @@ const MessagesFooter = ({ scrollToBottom }) => {
       remainingSeconds > 10 ? remainingSeconds : "0" + remainingSeconds
     }`;
   }
+
   useEffect(() => {
     let timeId;
     if (recording) {
@@ -72,14 +112,13 @@ const MessagesFooter = ({ scrollToBottom }) => {
   }, [recording]);
 
   const startRecording = async () => {
-    setAudioStartAt(new Date());
     audioChunksRef.current = [];
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
-
+      setAudioStartAt(new Date());
       mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
+        if (event.data.size >= 0) {
           audioChunksRef.current.push(event.data);
         }
       };
@@ -102,6 +141,14 @@ const MessagesFooter = ({ scrollToBottom }) => {
       mediaRecorderRef.current.state === "recording"
     ) {
       mediaRecorderRef.current.stop();
+      mediaRecorderRef.current?.removeEventListener(
+        "dataavailable",
+        (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        }
+      );
     }
   };
 
@@ -134,8 +181,8 @@ const MessagesFooter = ({ scrollToBottom }) => {
         config
       );
 
-      const data = response.data;
-      console.log("audio stored", data);
+      const message = response.data.data.message;
+      dispatch(pushNewMessage(message));
     } catch (error) {
       console.log("error in sending audio");
     } finally {
@@ -147,12 +194,116 @@ const MessagesFooter = ({ scrollToBottom }) => {
     }
   };
 
+  const onUpload = async (e, type) => {
+    const id = v4();
+    const aborter = new AbortController();
+
+    dispatch(addAbort({ id, aborter }));
+    const uploadMessage = {
+      id,
+      type: type,
+      isMediaUpload: true, // this boolean is for identifying that this message is just uploading placeholder and will be replaced by real message
+      url: window.URL.createObjectURL(e.target.files[0]),
+      isLoading: true,
+      error: "",
+      isCanceled: false,
+      aborter,
+    };
+    dispatch(pushNewMessage(uploadMessage));
+
+    try {
+      const config = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        signal: aborter.signal,
+      };
+      const form = new FormData();
+      for (let i = 0; i < e.target.files.length; i++) {
+        form.append(type, e.target.files[i]);
+      }
+      form.append("type", type);
+      form.append("receiver", receiver._id);
+      imageRef.current.value = "";
+      videoRef.current.value = "";
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_URL
+        }/api/v1/conversations/${conversationId}/messages`,
+        form,
+        config
+      );
+      const data = response.data;
+      console.log("data", { id, message: data.data.message });
+      dispatch(switchWithRealMsg({ id, message: data.data.message }));
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("request si aborted");
+      }
+    }
+  };
+
   return (
     <div className="absolute h-[5rem] w-full bg-[#1B202D] bottom-0 left-0 flex items-center px-4 gap-4">
+      <div className="w-0 h-0 overflow-hidden">
+        <input
+          type="file"
+          id="imageInput"
+          ref={imageRef}
+          onChange={(e) => {
+            return onUpload(e, "image");
+          }}
+        />
+        <input
+          type="file"
+          id="videoInput"
+          ref={videoRef}
+          onChange={(e) => {
+            return onUpload(e, "video");
+          }}
+        />
+        <input type="file" id="docInput" onChange={console.log} ref={docRef} />
+      </div>
+
       {!recording && (
         <>
-          <div className="text-xl text-white flex gap-4">
-            <HiOutlinePlus className="cursor-pointer" />
+          <div className="text-xl text-white flex gap-4 relative">
+            {showFileMenu && (
+              <div className="absolute bottom-[2rem] rounded-md bg-secondary flex justify-start items-center flex-col overflow-hidden shadow-slate-700 shadow-sm p-[4px]">
+                <button
+                  className="flex items-center gap-2 text-sm min-w-[10rem] w-[10rem] p-2  hover:bg-gray-700 cursor-pointer rounded-lg"
+                  onClick={() => docRef.current?.click()}
+                >
+                  <FaFile className="inline-flex me-2" />{" "}
+                  <span>Upload file</span>
+                </button>
+                <button
+                  className="flex items-center gap-2 text-sm min-w-[10rem] w-[10rem] p-2  hover:bg-gray-700 cursor-pointer rounded-lg"
+                  onClick={() => {
+                    console.log("input clicked", imageRef.current);
+                    imageRef.current?.click();
+                  }}
+                >
+                  <FaFileImage className="inline-flex me-2" />{" "}
+                  <span>Upload image</span>
+                </button>
+                <button
+                  className="flex items-center gap-2 text-sm min-w-[10rem] w-[10rem] p-2  hover:bg-gray-700 cursor-pointer rounded-lg"
+                  onClick={() => videoRef.current?.click()}
+                >
+                  <RiFileVideoFill className="inline-flex me-2" />{" "}
+                  <span>Upload video</span>
+                </button>
+              </div>
+            )}
+            <button ref={fileMenuRef}>
+              <HiOutlinePlus
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowFileMenu((prev) => !prev);
+                }}
+              />
+            </button>
             <FaRegFaceLaugh className="cursor-pointer" />
           </div>
 
@@ -167,7 +318,6 @@ const MessagesFooter = ({ scrollToBottom }) => {
           </div>
         </>
       )}
-
       {recording && (
         <div className="flex justify-between w-full items-center">
           <div className="text-xl text-white flex items-center gap-2">
@@ -190,7 +340,6 @@ const MessagesFooter = ({ scrollToBottom }) => {
           </div>
         </div>
       )}
-
       {!recording && (
         <>
           <div className="text-xl text-white" onClick={() => startRecording()}>
@@ -205,4 +354,4 @@ const MessagesFooter = ({ scrollToBottom }) => {
   );
 };
 
-export default MessagesFooter;
+export default memo(MessagesFooter);

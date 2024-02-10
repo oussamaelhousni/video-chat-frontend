@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios, { isCancel } from "axios";
 
 const initialState = {
   isLoading: false,
@@ -71,6 +71,25 @@ const currentConversationSlice = createSlice({
     pushNewMessage: (state, { payload }) => {
       state.messages = [...state.messages, payload];
     },
+    abortMessage: (state, { payload }) => {
+      console.log("here aborting", payload);
+      const message = state.messages.find((m) => m.id === payload.id);
+      state.messages = state.messages.map((msg) => {
+        if (msg.id === payload.id && message) {
+          return { ...message, isLoading: false, isCanceled: true };
+        }
+        return { ...msg };
+      });
+    },
+    switchWithRealMsg: (state, { payload }) => {
+      console.log("hadxi", payload);
+      state.messages = state.messages.map((msg) => {
+        if (msg.id === payload.id) {
+          return { ...payload.message };
+        }
+        return msg;
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -111,5 +130,9 @@ const currentConversationSlice = createSlice({
 });
 
 export default currentConversationSlice.reducer;
-export const { setCurrentConversation, pushNewMessage } =
-  currentConversationSlice.actions;
+export const {
+  setCurrentConversation,
+  pushNewMessage,
+  abortMessage,
+  switchWithRealMsg,
+} = currentConversationSlice.actions;

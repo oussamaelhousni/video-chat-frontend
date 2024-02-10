@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import MessagesHeader from "./MessagesHeader";
 import MessagesFooter from "./MessagesFooter";
 import Message from "./Message";
+import MessageMediaUploader from "./MessageMediaUploader";
 
 import { pushNewMessage } from "../../../app/slices/currentConversationSlice";
 // fake data
@@ -61,7 +62,7 @@ const MessagesList = () => {
             <Message
               message={message}
               messageBefore={messages[index - 1]?.sender === message.sender}
-              key={message._id}
+              key={message._id || message.id}
               userId={userId}
             />
           );

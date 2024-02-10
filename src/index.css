@@ -53,33 +53,20 @@ html {
   }
 }
 
-wave-audio-path-player {
-  margin-top: 10px;
-  margin-bottom: 10px;
+[data-testid="timer"] {
+  color: white !important;
 }
 
-#demo1::part(player) {
-  background: rgb(0, 0, 0);
-  padding: 15px 0px;
-  border-radius: 20px;
-  border: 1px solid black;
+.anti-spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: anti-spin 4s linear infinite;
 }
 
-#demo1::part(button) {
-  stroke: white;
-  fill: white;
-}
-
-#demo1::part(currenttime),
-#demo1::part(duration) {
-  color: white;
-  font-weight: bold;
-}
-
-#demo1::part(path1) {
-  stroke: white;
-}
-
-#demo1::part(path2) {
-  stroke: fuchsia;
+@keyframes anti-spin {
+  100% {
+    transform: rotate(-360deg);
+  }
 }
